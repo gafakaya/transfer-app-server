@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SigninDto, SignupDto } from './dto';
 import * as argon from 'argon2';
@@ -28,19 +28,59 @@ export class AuthService {
     return tokens;
   }
 
-  signinLocal(signinDto: SigninDto) {
-    return 'signin';
+  async signinLocal(signinDto: SigninDto): Promise<Tokens> {
+    const { email, password } = signinDto;
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!user) throw new ForbiddenException('Creadentials incorrect');
+
+    const isPasswordVerify = await argon.verify(user.hash, password);
+    if (!isPasswordVerify)
+      throw new ForbiddenException('Credentials incorrect');
+
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+
+    return tokens;
   }
 
-  logout() {
-    return 'logout';
+  async logout(userId: string): Promise<boolean> {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        hashedRt: {
+          not: null,
+        },
+      },
+      data: {
+        hashedRt: null,
+      },
+    });
+    return true;
   }
 
-  refreshTokens() {
-    return 'refresh';
+  async refreshTokens(userId: string, refresh_token: string): Promise<Tokens> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user || !user.hashedRt) throw new ForbiddenException('Access Denied');
+
+    const refreshTokeVerify = await argon.verify(user.hashedRt, refresh_token);
+    if (!refreshTokeVerify) throw new ForbiddenException('Access Denied');
+
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+
+    return tokens;
   }
 
-  //* ----UTILITY FUNCTIONS----
+  //*----UTILITY FUNCTIONS----
 
   async updateRefreshTokenHash(
     userId: string,
