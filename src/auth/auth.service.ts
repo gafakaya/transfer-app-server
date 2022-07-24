@@ -18,7 +18,11 @@ export class AuthService {
         firstName,
         lastName,
         email,
-        hash,
+        hashed: {
+          create: {
+            hash,
+          },
+        },
       },
     });
 
@@ -35,10 +39,13 @@ export class AuthService {
       where: {
         email,
       },
+      include: {
+        hashed: true,
+      },
     });
     if (!user) throw new ForbiddenException('Creadentials incorrect');
 
-    const isPasswordVerify = await argon.verify(user.hash, password);
+    const isPasswordVerify = await argon.verify(user.hashed.hash, password);
     if (!isPasswordVerify)
       throw new ForbiddenException('Credentials incorrect');
 
@@ -49,9 +56,9 @@ export class AuthService {
   }
 
   async logout(userId: string): Promise<boolean> {
-    await this.prisma.user.updateMany({
+    await this.prisma.hashed.updateMany({
       where: {
-        id: userId,
+        userId,
         hashedRt: {
           not: null,
         },
@@ -68,10 +75,17 @@ export class AuthService {
       where: {
         id: userId,
       },
+      include: {
+        hashed: true,
+      },
     });
-    if (!user || !user.hashedRt) throw new ForbiddenException('Access Denied');
+    if (!user || !user.hashed.hashedRt)
+      throw new ForbiddenException('Access Denied');
 
-    const refreshTokeVerify = await argon.verify(user.hashedRt, refresh_token);
+    const refreshTokeVerify = await argon.verify(
+      user.hashed.hashedRt,
+      refresh_token,
+    );
     if (!refreshTokeVerify) throw new ForbiddenException('Access Denied');
 
     const tokens = await this.getTokens(user.id, user.email);
@@ -88,9 +102,9 @@ export class AuthService {
   ): Promise<void> {
     const hash = await argon.hash(refresh_token);
 
-    await this.prisma.user.update({
+    await this.prisma.hashed.update({
       where: {
-        id: userId,
+        userId,
       },
       data: {
         hashedRt: hash,
