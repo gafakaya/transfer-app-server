@@ -1,5 +1,9 @@
 import { Prisma, User } from '@prisma/client';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -14,6 +18,9 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({
       where: {
         id,
+      },
+      include: {
+        roles: true,
       },
     });
     if (!user) throw new NotFoundException('User not found!');
@@ -51,5 +58,43 @@ export class UsersService {
     });
 
     return true;
+  }
+
+  async makeAdmin(userId: string): Promise<User> {
+    await this.findOne(userId);
+
+    const user = this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        roles: {
+          connect: {
+            role: 'admin',
+          },
+        },
+      },
+    });
+
+    return user;
+  }
+
+  async removeAdmin(userId: string): Promise<User> {
+    await this.findOne(userId);
+
+    const user = this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        roles: {
+          disconnect: {
+            role: 'admin',
+          },
+        },
+      },
+    });
+
+    return user;
   }
 }

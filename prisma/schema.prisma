@@ -20,6 +20,8 @@ model User {
 
   hashed Hashed?
 
+  roles Role[]
+
   @@map("users")
 }
 
@@ -31,4 +33,15 @@ model Hashed {
 
   hash     String
   hashedRt String?
+}
+
+model Role {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role String @unique
+
+  users User[]
 }
