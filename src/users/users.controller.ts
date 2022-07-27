@@ -9,8 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { User, Prisma } from '@prisma/client';
-import { GetCurrentUserId, Roles } from 'src/common/decorators';
-import { Role } from 'src/common/enums';
+import { Roles } from 'src/common/decorators';
+import { ERole } from 'src/common/enums';
 import { AccessTokenGuard } from 'src/common/guards';
 import { UsersService } from './users.service';
 
@@ -40,7 +40,7 @@ export class UsersController {
   @Patch('makeadmin/:id')
   @UseGuards(RolesGuard)
   @UseGuards(AccessTokenGuard)
-  @Roles(Role.ADMIN)
+  @Roles(ERole.ADMIN)
   makeAdmin(@Param('id') id: string): Promise<User> {
     return this.usersService.makeAdmin(id);
   }
@@ -48,7 +48,7 @@ export class UsersController {
   @Patch('removeadmin/:id')
   @UseGuards(RolesGuard)
   @UseGuards(AccessTokenGuard)
-  @Roles(Role.ADMIN)
+  @Roles(ERole.ADMIN)
   removeAdmin(@Param('id') id: string): Promise<User> {
     return this.usersService.removeAdmin(id);
   }
@@ -56,7 +56,7 @@ export class UsersController {
   @Delete(':id')
   @UseGuards(RolesGuard)
   @UseGuards(AccessTokenGuard)
-  @Roles(Role.ADMIN)
+  @Roles(ERole.ADMIN)
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
