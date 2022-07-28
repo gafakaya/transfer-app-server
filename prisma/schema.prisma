@@ -22,6 +22,8 @@ model User {
 
   roles Role[]
 
+  reservations Reservation[]
+
   @@map("users")
 }
 
@@ -44,4 +46,23 @@ model Role {
   role String @unique
 
   users User[]
+}
+
+model Reservation {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fromWhere     String
+  toWhere       String
+  departureDate DateTime
+
+  isRoundTrip Boolean?
+  returnDate  DateTime?
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  @@map("reservations")
 }
