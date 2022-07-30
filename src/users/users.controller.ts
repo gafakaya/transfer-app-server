@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { User, Prisma } from '@prisma/client';
-import { Roles } from 'src/common/decorators';
+import { GetCurrentUserId, Roles } from 'src/common/decorators';
 import { ERole } from 'src/common/enums';
 import { AccessTokenGuard } from 'src/common/guards';
 import { UsersService } from './users.service';
@@ -32,9 +32,10 @@ export class UsersController {
   @UseGuards(AccessTokenGuard)
   update(
     @Param('id') id: string,
+    @GetCurrentUserId() currentUserId: string,
     @Body() updateUserDto: Prisma.UserUpdateInput,
   ): Promise<User> {
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService.update(id, currentUserId, updateUserDto);
   }
 
   @Patch('makeadmin/:id')

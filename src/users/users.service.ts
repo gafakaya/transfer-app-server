@@ -30,9 +30,13 @@ export class UsersService {
 
   async update(
     id: string,
+    currentUserId: string,
     updateUserDto: Prisma.UserUpdateInput,
   ): Promise<User> {
     await this.findOne(id);
+
+    if (id !== currentUserId)
+      throw new ForbiddenException('You cant update this user.');
 
     return await this.prisma.user.update({
       where: {

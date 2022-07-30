@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, Reservation } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
@@ -49,18 +53,20 @@ export class ReservationsService {
       },
     });
 
-    if (!reservation) throw new NotFoundException('Rezervation not found');
+    if (!reservation) throw new NotFoundException('Reservation not found');
 
     return reservation;
   }
 
   async update(
     id: string,
+    currentUserId: string,
     updateReservationDto: Prisma.ReservationUpdateInput,
   ): Promise<Reservation> {
-    const isExists = await this.isExixtsReservation(id);
+    const reservation = await this.findOne(id);
 
-    if (!isExists) throw new NotFoundException('Rezervation not found');
+    if (currentUserId !== reservation.userId)
+      throw new ForbiddenException('You cant update this reservation');
 
     return await this.prisma.reservation.update({
       where: {
@@ -70,10 +76,11 @@ export class ReservationsService {
     });
   }
 
-  async remove(id: string): Promise<Reservation> {
-    const isExists = await this.isExixtsReservation(id);
+  async remove(id: string, currentUserId: string): Promise<Reservation> {
+    const reservation = await this.findOne(id);
 
-    if (!isExists) throw new NotFoundException('Rezervation not found');
+    if (currentUserId !== reservation.userId)
+      throw new ForbiddenException('You cant update this reservation');
 
     return await this.prisma.reservation.delete({
       where: {

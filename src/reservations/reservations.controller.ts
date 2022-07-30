@@ -40,13 +40,18 @@ export class ReservationsController {
   @Patch(':id')
   update(
     @Param('id') id: string,
+    @GetCurrentUserId() currentUserId: string,
     @Body() updateReservationDto: Prisma.ReservationUpdateInput,
   ) {
-    return this.reservationsService.update(id, updateReservationDto);
+    return this.reservationsService.update(
+      id,
+      currentUserId,
+      updateReservationDto,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationsService.remove(id);
+  remove(@Param('id') id: string, @GetCurrentUserId() currentUserId: string) {
+    return this.reservationsService.remove(id, currentUserId);
   }
 }
