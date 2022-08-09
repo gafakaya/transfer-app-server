@@ -8,9 +8,17 @@ import { RolesModule } from './roles/roles.module';
 import { RolesGuard } from './common/guards/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ReservationsModule } from './reservations/reservations.module';
+import { VehiclesModule } from './vehicles/vehicles.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UsersModule, RolesModule, ReservationsModule],
+  imports: [
+    AuthModule,
+    PrismaModule,
+    UsersModule,
+    RolesModule,
+    ReservationsModule,
+    VehiclesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

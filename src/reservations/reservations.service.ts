@@ -15,18 +15,25 @@ export class ReservationsService {
     userId: string,
     createReservationDto: CreateReservationDto,
   ): Promise<Reservation> {
-    const { fromWhere, toWhere } = createReservationDto;
-    const departureDate = new Date(createReservationDto.departureDate);
-    const returnDate = new Date(createReservationDto.returnDate);
+    const {
+      originLat,
+      originLng,
+      destinationLat,
+      destinationLng,
+      departureTimestamp,
+      returnTimestamp,
+    } = createReservationDto;
     const isRoundTrip = Boolean(createReservationDto.isRoundTrip);
 
     const newReservation = await this.prisma.reservation.create({
       data: {
-        fromWhere,
-        toWhere,
-        departureDate,
+        originLat,
+        originLng,
+        destinationLat,
+        destinationLng,
+        departureTimestamp,
         isRoundTrip,
-        returnDate,
+        returnTimestamp,
         user: {
           connect: {
             id: userId,

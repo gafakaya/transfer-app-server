@@ -1,23 +1,37 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDecimal,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateReservationDto {
   @IsNotEmpty()
-  @IsString()
-  fromWhere: string;
+  @IsDecimal()
+  originLat: number;
 
   @IsNotEmpty()
-  @IsString()
-  toWhere: string;
+  @IsDecimal()
+  originLng: number;
 
   @IsNotEmpty()
-  @IsString()
-  departureDate: string;
+  @IsDecimal()
+  destinationLat: number;
+
+  @IsNotEmpty()
+  @IsDecimal()
+  destinationLng: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  departureTimestamp: number;
 
   @IsOptional()
   @IsString()
   isRoundTrip?: boolean;
 
   @IsOptional()
-  @IsString()
-  returnDate?: string;
+  @IsNumber()
+  returnTimestamp?: number;
 }

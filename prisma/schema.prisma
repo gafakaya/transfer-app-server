@@ -54,15 +54,36 @@ model Reservation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  fromWhere     String
-  toWhere       String
-  departureDate DateTime
+  originLat Decimal
+  originLng Decimal
 
-  isRoundTrip Boolean?
-  returnDate  DateTime?
+  destinationLat Decimal
+  destinationLng Decimal
+
+  departureTimestamp Int
+
+  isRoundTrip     Boolean?
+  returnTimestamp Int?
 
   user   User?   @relation(fields: [userId], references: [id])
   userId String?
 
   @@map("reservations")
+}
+
+model Vehicle {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicleName        String
+  vehicleDescription String?
+
+  capacity  Int
+  basePrice Int
+
+  imageName String
+
+  @@map("vehicles")
 }
