@@ -11,7 +11,15 @@ export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   async signupLocal(signupDto: SignupDto): Promise<Tokens> {
-    const { firstName, lastName, password, email } = signupDto;
+    const {
+      firstName,
+      lastName,
+      password,
+      email,
+      trId,
+      phoneNumber,
+      phoneIdd,
+    } = signupDto;
     const hash = await argon.hash(password);
 
     const newUser = await this.prisma.user.create({
@@ -19,6 +27,9 @@ export class AuthService {
         firstName,
         lastName,
         email,
+        phoneIdd,
+        phoneNumber,
+        trId,
         hashed: {
           create: {
             hash,

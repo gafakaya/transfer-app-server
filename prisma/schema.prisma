@@ -18,6 +18,11 @@ model User {
   firstName String?
   lastName  String?
 
+  phoneIdd    String
+  phoneNumber String @unique
+
+  trId String @unique
+
   hashed Hashed?
 
   roles Role[]
@@ -31,7 +36,7 @@ model Hashed {
   id String @id @default(uuid())
 
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   hash     String
   hashedRt String?
@@ -54,18 +59,20 @@ model Reservation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  originLat Decimal
-  originLng Decimal
+  originLat  Decimal
+  originLng  Decimal
+  originName String
 
-  destinationLat Decimal
-  destinationLng Decimal
+  destinationLat  Decimal
+  destinationLng  Decimal
+  destinationName String
 
   departureTimestamp Int
 
   isRoundTrip     Boolean?
   returnTimestamp Int?
 
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
 
   @@map("reservations")
@@ -83,7 +90,7 @@ model Vehicle {
   capacity  Int
   basePrice Int
 
-  imageName String
+  imageName String?
 
   @@map("vehicles")
 }

@@ -18,8 +18,10 @@ export class ReservationsService {
     const {
       originLat,
       originLng,
+      originName,
       destinationLat,
       destinationLng,
+      destinationName,
       departureTimestamp,
       returnTimestamp,
     } = createReservationDto;
@@ -29,8 +31,10 @@ export class ReservationsService {
       data: {
         originLat,
         originLng,
+        originName,
         destinationLat,
         destinationLng,
+        destinationName,
         departureTimestamp,
         isRoundTrip,
         returnTimestamp,

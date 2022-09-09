@@ -22,6 +22,11 @@ export class VehiclesController {
   constructor(private vehiclesService: VehiclesService) {}
 
   @Post('')
+  createVehcile(@Body() createVehcileDto: CreateVehicleDto): Promise<Vehicle> {
+    return this.vehiclesService.create(createVehcileDto);
+  }
+
+  @Post('addImage/:vehicleId')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -36,18 +41,18 @@ export class VehiclesController {
       }),
     }),
   )
-  createVehcile(
+  addVehcilePicture(
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: 'jpeg|jpg|png' })],
       }),
     )
     file: Express.Multer.File,
-    @Body() createVehcileDto: CreateVehicleDto,
+    @Param('vehicleId') vehicleId: string,
   ): Promise<Vehicle> {
     const fileName = file?.filename;
     console.log(file);
-    return this.vehiclesService.create(fileName, createVehcileDto);
+    return this.vehiclesService.addImage(vehicleId, fileName);
   }
 
   @Get(':id')

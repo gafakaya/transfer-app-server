@@ -20,6 +20,7 @@ export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
   @Post()
+  @UseGuards(AccessTokenGuard)
   create(
     @Body() createReservationDto: CreateReservationDto,
     @GetCurrentUserId() userId: string,

@@ -8,20 +8,26 @@ import {
 
 export class CreateReservationDto {
   @IsNotEmpty()
-  @IsDecimal()
+  @IsNumber()
   originLat: number;
 
   @IsNotEmpty()
-  @IsDecimal()
+  @IsNumber()
   originLng: number;
 
   @IsNotEmpty()
-  @IsDecimal()
+  originName: string;
+
+  @IsNotEmpty()
+  @IsNumber()
   destinationLat: number;
 
   @IsNotEmpty()
-  @IsDecimal()
+  @IsNumber()
   destinationLng: number;
+
+  @IsNotEmpty()
+  destinationName: string;
 
   @IsNotEmpty()
   @IsNumber()

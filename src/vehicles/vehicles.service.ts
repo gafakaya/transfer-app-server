@@ -7,10 +7,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 export class VehiclesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    imageName: string,
-    createVehicleDto: CreateVehicleDto,
-  ): Promise<Vehicle> {
+  async create(createVehicleDto: CreateVehicleDto): Promise<Vehicle> {
     const { vehicleName, vehicleDescription } = createVehicleDto;
 
     const capacity = parseInt(createVehicleDto.capacity);
@@ -22,11 +19,21 @@ export class VehiclesService {
         vehicleDescription,
         capacity,
         basePrice,
-        imageName,
       },
     });
 
     return vehicle;
+  }
+
+  async addImage(vehicleId: string, imageName: string) {
+    return await this.prisma.vehicle.update({
+      where: {
+        id: vehicleId,
+      },
+      data: {
+        imageName,
+      },
+    });
   }
 
   async findOne(id: string): Promise<Vehicle> {

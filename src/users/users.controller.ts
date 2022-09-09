@@ -23,6 +23,12 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('me')
+  @UseGuards(AccessTokenGuard)
+  findMe(@GetCurrentUserId() currentUserId: string): Promise<User> {
+    return this.usersService.findMe(currentUserId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findOne(id);
