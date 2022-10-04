@@ -22,8 +22,14 @@ export class ReservationsService {
       destinationLat,
       destinationLng,
       destinationName,
-      departureTimestamp,
-      returnTimestamp,
+      departureDate,
+      returnDate,
+      distanceText,
+      distanceValue,
+      durationValue,
+      durationText,
+      totalPrice,
+      vehicleId,
     } = createReservationDto;
     const isRoundTrip = Boolean(createReservationDto.isRoundTrip);
 
@@ -35,12 +41,22 @@ export class ReservationsService {
         destinationLat,
         destinationLng,
         destinationName,
-        departureTimestamp,
+        departureDate,
         isRoundTrip,
-        returnTimestamp,
+        returnDate,
+        distanceText,
+        distanceValue,
+        durationText,
+        durationValue,
+        totalPrice,
         user: {
           connect: {
             id: userId,
+          },
+        },
+        vehicle: {
+          connect: {
+            id: vehicleId,
           },
         },
       },
@@ -49,10 +65,72 @@ export class ReservationsService {
     return newReservation;
   }
 
-  async findAll(userId: string): Promise<Reservation[]> {
+  async findAllOwn(userId: string): Promise<Reservation[]> {
     return await this.prisma.reservation.findMany({
       where: {
         userId,
+      },
+      include: {
+        user: true,
+        vehicle: true,
+      },
+    });
+  }
+
+  async findAllUpToDateOwn(userId: string): Promise<Reservation[]> {
+    return await this.prisma.reservation.findMany({
+      where: {
+        userId,
+        departureDate: {
+          gt: new Date(),
+        },
+      },
+      include: {
+        user: true,
+        vehicle: true,
+      },
+    });
+  }
+
+  async findAllUpToDate(): Promise<Reservation[]> {
+    return await this.prisma.reservation.findMany({
+      where: {
+        departureDate: {
+          gt: new Date(),
+        },
+      },
+      include: {
+        user: true,
+        vehicle: true,
+      },
+    });
+  }
+
+  async findAllPastOwn(userId: string): Promise<Reservation[]> {
+    return await this.prisma.reservation.findMany({
+      where: {
+        userId,
+        departureDate: {
+          lt: new Date(),
+        },
+      },
+      include: {
+        user: true,
+        vehicle: true,
+      },
+    });
+  }
+
+  async findAllPast(): Promise<Reservation[]> {
+    return await this.prisma.reservation.findMany({
+      where: {
+        departureDate: {
+          lt: new Date(),
+        },
+      },
+      include: {
+        user: true,
+        vehicle: true,
       },
     });
   }
@@ -61,6 +139,10 @@ export class ReservationsService {
     const reservation = await this.prisma.reservation.findUnique({
       where: {
         id,
+      },
+      include: {
+        user: true,
+        vehicle: true,
       },
     });
 
@@ -84,6 +166,10 @@ export class ReservationsService {
         id,
       },
       data: updateReservationDto,
+      include: {
+        user: true,
+        vehicle: true,
+      },
     });
   }
 
@@ -91,11 +177,15 @@ export class ReservationsService {
     const reservation = await this.findOne(id);
 
     if (currentUserId !== reservation.userId)
-      throw new ForbiddenException('You cant update this reservation');
+      throw new ForbiddenException('You cant delete this reservation');
 
     return await this.prisma.reservation.delete({
       where: {
         id,
+      },
+      include: {
+        user: true,
+        vehicle: true,
       },
     });
   }

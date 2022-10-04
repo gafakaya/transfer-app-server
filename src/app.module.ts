@@ -9,6 +9,8 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ReservationsModule } from './reservations/reservations.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { HourlyRentalModule } from './hourly-rental/hourly-rental.module';
+import { PricingModule } from './admin/pricing/pricing.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     RolesModule,
     ReservationsModule,
     VehiclesModule,
+    HourlyRentalModule,
+    PricingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

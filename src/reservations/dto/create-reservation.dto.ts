@@ -1,5 +1,5 @@
 import {
-  IsDecimal,
+  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -30,14 +30,35 @@ export class CreateReservationDto {
   destinationName: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  departureTimestamp: number;
+  @IsDateString()
+  departureDate: Date;
 
   @IsOptional()
   @IsString()
   isRoundTrip?: boolean;
 
   @IsOptional()
+  @IsDateString()
+  returnDate?: Date;
+
+  @IsNotEmpty()
   @IsNumber()
-  returnTimestamp?: number;
+  totalPrice: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  distanceValue: number;
+
+  @IsNotEmpty()
+  distanceText: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  durationValue: number;
+
+  @IsNotEmpty()
+  durationText: string;
+
+  @IsNotEmpty()
+  vehicleId: string;
 }
