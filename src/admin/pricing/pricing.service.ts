@@ -73,9 +73,23 @@ export class PricingService {
 
   async setActive(id: string): Promise<Pricing> {
     const currentActive = await this.findActive();
-    await this.update(currentActive.id, { isActive: false });
+    await this.prisma.pricing.update({
+      where: {
+        id: currentActive.id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
 
-    return await this.update(id, { isActive: true });
+    return await this.prisma.pricing.update({
+      where: {
+        id,
+      },
+      data: {
+        isActive: true,
+      },
+    });
   }
 
   async remove(id: string): Promise<Pricing> {
