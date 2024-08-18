@@ -13,12 +13,130 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email    String  @unique
-  hash     String
-  hashedRt String?
+  email String @unique
 
   firstName String?
   lastName  String?
 
+  phoneIdd    String
+  phoneNumber String @unique
+
+  trId String @unique
+
+  hashed Hashed?
+
+  roles Role[]
+
+  reservations Reservation[]
+  HourlyRental HourlyRental[]
+
   @@map("users")
+}
+
+model Hashed {
+  id String @id @default(uuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  hash     String
+  hashedRt String?
+}
+
+model Role {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role String @unique
+
+  users User[]
+}
+
+model Reservation {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  originLat  Decimal
+  originLng  Decimal
+  originName String
+
+  destinationLat  Decimal
+  destinationLng  Decimal
+  destinationName String
+
+  totalPrice Float
+
+  distanceValue Int
+  distanceText  String
+
+  durationValue Int
+  durationText  String
+
+  departureDate DateTime
+
+  isRoundTrip Boolean?
+  returnDate  DateTime?
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+  vehicleId String?
+
+  @@map("reservations")
+}
+
+model HourlyRental {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  originLat  Decimal
+  originLng  Decimal
+  originName String
+
+  departureTimestamp Int
+
+  duration Int
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  @@map("hourly_rentals")
+}
+
+model Vehicle {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicleName        String
+  vehicleDescription String?
+
+  capacity  Int
+  basePrice Int
+
+  imageName   String?
+  Reservation Reservation[]
+
+  @@map("vehicles")
+}
+
+model Pricing {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  litrePerKm      Float
+  costPerGasLitre Float
+  pricePerKm      Float
+
+  isActive Boolean @default(false)
 }
